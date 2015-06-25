@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">OTPNFCTransfer</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="nfc_send_active">NFC send active</string>
+    <string name="filegeneration_active">File generation active</string>
+</resources>
