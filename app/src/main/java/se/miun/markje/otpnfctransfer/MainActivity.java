@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class MainActivity extends Activity {
 
     private Switch fileGenerationSwitch;
+    private CheckBox sendActiveCheckbox;
     private TextView statusTextView;
 
     private BeamFileTransfer beamFileTransfer;
@@ -29,6 +30,10 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         statusTextView = (TextView) findViewById(R.id.statusTextView);
+
+        sendActiveCheckbox = (CheckBox) findViewById(R.id.nfcTransferActive);
+        sendActiveCheckbox.setOnCheckedChangeListener(new SendstateChangedListener());
+
         fileGenerationSwitch = (Switch) findViewById(R.id.fileGenerationSwitch);
         fileGenerationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -70,6 +75,10 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * Sets status text in the lower part of the activity.
+     * @param status New status
+     */
     private void setStatus(CharSequence status) {
         statusTextView.setText(status);
     }
@@ -106,5 +115,23 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class SendstateChangedListener implements CompoundButton.OnCheckedChangeListener {
+
+        /**
+         * Called when the checked state of sendbutton (on/off) changes
+         *
+         * @param buttonView The compound button view whose state has changed. Ignored
+         * @param isChecked  The new checked state of buttonView.
+         */
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if(isChecked){
+                beamFileTransfer.setState(BeamFileTransferState.READ_WRITE);
+            }else{
+                beamFileTransfer.setState(BeamFileTransferState.READ);
+            }
+        }
     }
 }
