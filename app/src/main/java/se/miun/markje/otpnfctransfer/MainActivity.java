@@ -2,6 +2,7 @@ package se.miun.markje.otpnfctransfer;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -19,6 +20,8 @@ public class MainActivity extends Activity {
     private Switch fileGenerationSwitch;
     private TextView statusTextView;
 
+    private BeamFileTransfer beamFileTransfer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,22 +33,35 @@ public class MainActivity extends Activity {
         fileGenerationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     startFileGenerationService();
-                }else{
+                } else {
                     stopFileGenerationService();
                 }
             }
         });
-        Log.d(this.getClass().toString(), "onCreate");
-
+        beamFileTransfer = new BeamFileTransfer(this);
     }
+
+    /**
+     * Intents receievd are OTPFileGenerator.ACTION_RELEASE_FILE_LIST_RESULT
+     * When files have been generated (stopped by user)
+     * and ACTION_VIEW
+     * When files are recieved by Beam.
+     * @param intent Incoming intent
+     */
     @Override
     protected void onNewIntent (Intent intent) {
         super.onNewIntent(intent);
-        Log.d(this.getClass().toString(), "onResume");
+        if ( intent.getAction() == null )
+            return;
 
-        if( intent.getAction() != null && intent.getAction().equals(OTPFileGenerator.ACTION_RELEASE_FILE_LIST_RESULT)){
+        if( intent.getAction().equals(Intent.ACTION_VIEW)){
+            Uri uri = intent.getData();
+            beamFileTransfer.getFiles(uri);
+        }
+
+        if( intent.getAction().equals(OTPFileGenerator.ACTION_RELEASE_FILE_LIST_RESULT)){
             ArrayList<CharSequence> list = intent.getCharSequenceArrayListExtra(OTPFileGenerator.RESULT_FILE_LIST);
 
             setStatus("Created " + list.size() + " files");
