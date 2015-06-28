@@ -47,7 +47,6 @@ public class FileGenerator {
 
     public String generate() throws IOException {
         String fileName = newFileName();
-
         //File otpDirectory = new File(Environment.getExternalStorageDirectory(), APP_DIRECTORY);
         File otpDirectory = new File(EXTERNAL_DIRECTORY, APP_DIRECTORY);
         otpDirectory.mkdirs();
