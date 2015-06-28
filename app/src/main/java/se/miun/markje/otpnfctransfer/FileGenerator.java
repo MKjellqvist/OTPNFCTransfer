@@ -19,7 +19,6 @@ import java.security.SecureRandom;
  */
 public class FileGenerator {
 
-    public static String source = "/dev/random";
     public static final String APP_DIRECTORY = "otp_data";
 
     public static String EXTERNAL_DIRECTORY = "";
@@ -47,13 +46,6 @@ public class FileGenerator {
     }
 
     public String generate() throws IOException {
-        FileReader reader = null;
-        try {
-            reader = new FileReader(source);
-        } catch (FileNotFoundException fnf){
-            throw new FileNotFoundException("Can't find " + source);
-        }
-        // Output filename and path
         String fileName = newFileName();
 
         //File otpDirectory = new File(Environment.getExternalStorageDirectory(), APP_DIRECTORY);
@@ -63,13 +55,12 @@ public class FileGenerator {
         Log.d(this.getClass().toString(), "Filename: " + file.getAbsolutePath());
         FileOutputStream writer = new FileOutputStream(file);
 
-        write(reader, writer);
-        reader.close();
+        write(writer);
         writer.close();
         return fileName;
     }
 
-    private void write(FileReader reader, FileOutputStream writer) throws IOException {
+    private void write(FileOutputStream writer) throws IOException {
         byte[] output = new byte[fileSize];
         sr.nextBytes(output);
         writer.write(output);
