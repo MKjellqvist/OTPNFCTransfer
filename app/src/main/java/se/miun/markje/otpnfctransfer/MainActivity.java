@@ -12,11 +12,14 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.security.Provider;
+import java.security.Security;
 import java.util.ArrayList;
 
 
 public class MainActivity extends Activity {
 
+    private static final int FILE_SIZE = 10000;
     private Switch fileGenerationSwitch;
     private CheckBox sendActiveCheckbox;
     private TextView statusTextView;
@@ -46,6 +49,7 @@ public class MainActivity extends Activity {
             }
         });
         beamFileTransfer = new BeamFileTransfer(this);
+        onNewIntent(getIntent());
     }
 
     /**
@@ -58,18 +62,23 @@ public class MainActivity extends Activity {
     @Override
     protected void onNewIntent (Intent intent) {
         super.onNewIntent(intent);
+        Log.d(this.getClass().toString(), "Activity " + intent);
         if ( intent.getAction() == null )
             return;
 
         if( intent.getAction().equals(Intent.ACTION_VIEW)){
             Uri uri = intent.getData();
+            setStatus("Beaming");
             beamFileTransfer.getFiles(uri);
+            setStatus("Beamed");
+            return;
         }
 
         if( intent.getAction().equals(OTPFileGenerator.ACTION_RELEASE_FILE_LIST_RESULT)){
-            ArrayList<CharSequence> list = intent.getCharSequenceArrayListExtra(OTPFileGenerator.RESULT_FILE_LIST);
+            ArrayList<String> fileList = intent.getStringArrayListExtra(OTPFileGenerator.RESULT_FILE_LIST);
 
-            setStatus("Created " + list.size() + " files");
+            setStatus("Created " + fileList.size() + " files");
+            beamFileTransfer.addFilesAvailable(fileList);
         }else{
             setStatus("Resumed");
         }
@@ -84,7 +93,7 @@ public class MainActivity extends Activity {
     }
 
     private void startFileGenerationService() {
-        OTPFileGenerator.startActionGenerate(this, OTPFileGenerator.GENERATION_PRIORITY_HIGH, "test", 10000);
+        OTPFileGenerator.startActionGenerate(this, OTPFileGenerator.GENERATION_PRIORITY_HIGH, "test", FILE_SIZE);
         setStatus("Generating");
     }
 
