@@ -18,12 +18,13 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-
+            </intent-filter>
+            <intent-filter>
                 <!-- For Beam to notivy us of files recieved -->
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.CATEGORY_DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/mathml" />
             </intent-filter>
         </activity>
 
