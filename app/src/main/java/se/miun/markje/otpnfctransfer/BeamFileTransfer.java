@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcEvent;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.List;
  */
 public class BeamFileTransfer {
 
-    public static int MAX_FILES_TO_SEND = 100;
+    public static int MAX_FILES_TO_SEND = 10;
     private Activity activity;
 
     public static class NoNFCAdapterException extends RuntimeException{
@@ -70,6 +71,7 @@ public class BeamFileTransfer {
     public void addFilesAvailable(List<String> fileList){
         for(String fileName:fileList){
             File file = new File(fileName);
+            Log.d(this.getClass().toString(), fileName);
             uriList.add(Uri.fromFile(file));
         }
     }
@@ -84,10 +86,12 @@ public class BeamFileTransfer {
     {
         @Override
         public Uri[] createBeamUris(NfcEvent event) {
-            int arraySize = Math.max(uriList.size(), MAX_FILES_TO_SEND);
+            Log.d(this.getClass().toString(), event.toString());
+            int arraySize = Math.min(uriList.size(), MAX_FILES_TO_SEND);
             Uri[] uriArray = new Uri[arraySize];
             for (int i = 0; i < arraySize; i++) {
                 uriArray[i] = uriList.remove(0);
+                Log.d(this.getClass().toString(), uriArray[i].toString());
             }
             return uriArray;
         }
