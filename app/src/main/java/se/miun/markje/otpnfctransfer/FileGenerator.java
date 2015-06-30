@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
@@ -22,14 +23,16 @@ public class FileGenerator {
     public static final String APP_DIRECTORY = "otp_data";
 
     public static String EXTERNAL_DIRECTORY = "";
+    public static String POSTFIX = ".mml";
 
     private String prefix;
     private int fileSize;
     private int fileCount;
     private SecureRandom sr;
 
-    public FileGenerator(String prefix, int fileSize) {
-        sr = new SecureRandom();
+    public FileGenerator(String prefix, int fileSize) throws NoSuchAlgorithmException{
+        sr = SecureRandom.getInstance("SHA1PRNG");
+
         this.prefix = prefix;
         this.fileSize = fileSize;
         fileCount = 0;
@@ -42,7 +45,7 @@ public class FileGenerator {
     private String newFileName(){
         fileCount++;
         String serial = String.format("%03d", fileCount);
-        return prefix + serial;
+        return prefix + serial + POSTFIX;
     }
 
     public String generate() throws IOException {
@@ -56,7 +59,7 @@ public class FileGenerator {
 
         write(writer);
         writer.close();
-        return fileName;
+        return file.getAbsolutePath();
     }
 
     private void write(FileOutputStream writer) throws IOException {
