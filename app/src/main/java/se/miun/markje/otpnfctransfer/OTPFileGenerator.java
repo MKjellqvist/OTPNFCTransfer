@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -132,17 +133,15 @@ public class OTPFileGenerator extends Service {
     }
 
     private void handleReleaseFileList(Intent targetIntent) {
-        ArrayList<CharSequence> list = new ArrayList<>();
-        for (String name:fileList) {
-            list.add(name);
-        }
+        ArrayList<String> list = new ArrayList<>(fileList);
         fileList.clear();
         targetIntent = new Intent(this, MainActivity.class);
         targetIntent.setAction(ACTION_RELEASE_FILE_LIST_RESULT);
-        targetIntent.putCharSequenceArrayListExtra(RESULT_FILE_LIST, list);
+        targetIntent.putStringArrayListExtra(RESULT_FILE_LIST, list);
         targetIntent.putExtra("HELLO", "HELLO");
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
         startActivity(targetIntent);
     }
 
@@ -176,8 +175,8 @@ public class OTPFileGenerator extends Service {
 
         @Override
         public void run() {
-            FileGenerator generator = new FileGenerator(prefix, fileSize);
             try {
+                FileGenerator generator = new FileGenerator(prefix, fileSize);
                 while (generating) {
                     String fileName = generator.generate();
                     fileList.add(fileName);
@@ -188,6 +187,8 @@ public class OTPFileGenerator extends Service {
                 Log.e(this.getClass().toString(), ioe.getMessage());
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } catch (NoSuchAlgorithmException nsa){
+                Log.e(this.getClass().toString(), nsa.getMessage());
             } finally {
                 generating = false;
             }
